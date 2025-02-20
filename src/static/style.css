@@ -1,0 +1,121 @@
+body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 0;
+    color: white;
+    background-color: #18181c;
+}
+
+footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background-color: #333;
+    color: #fff;
+    padding: 10px 0;
+    text-align: center;
+}
+
+.footer-container a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.footer-container a:hover {
+    text-decoration: underline;
+}
+
+.footer-container p {
+    margin: 0;
+}
+
+/* General Container */
+.container {
+    margin: 20px auto;
+    padding: 20px;
+    max-width: 1000px;
+    background: #121212;
+    border-radius: 8px;
+    color: #fff;
+}
+
+/* Header Style */
+.stats-header {
+    text-align: center;
+    font-size: 2rem;
+    margin-bottom: 20px;
+    color: #fff;
+}
+
+/* Table Styling */
+.stats-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #1e1e1e;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    animation: fadeIn 0.5s ease-in;
+}
+
+/* Table Header */
+.stats-table th, .stats-table td {
+    padding: 15px;
+    text-align: center;
+    font-size: 1rem;
+    color: #ddd;
+}
+
+/* Table Header Background */
+.stats-table th {
+    background-color: #6200ea;
+    color: #fff;
+    font-weight: bold;
+}
+
+/* Table Row Styling */
+.stats-row {
+    transition: background-color 0.3s ease, transform 0.2s ease-in-out;
+}
+
+/* Row Hover Effect */
+.stats-row:hover {
+    background-color: #333;
+    transform: scale(1.02);
+}
+
+/* Even and Odd Row Background */
+.stats-row:nth-child(odd) {
+    background-color: #2a2a2a;
+}
+
+.stats-row:nth-child(even) {
+    background-color: #3a3a3a;
+}
+
+/* Fade In Animation */
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Top Player Count */
+.stats-header::after {
+    content: " - " attr(data-count) " Players";
+    font-size: 1rem;
+    color: #6200ea;
+    display: block;
+    margin-top: 10px;
+}
+
+/* Smooth Transition for All Elements */
+* {
+    transition: all 0.3s ease;
+}

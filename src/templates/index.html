@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Home - My Flask App{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <h3 class="stats-header">Top Players Stats {{ api_list|length }} Found</h3>
+        <table class="stats-table">
+            <thead>
+                <tr>
+                    <th>Place</th>
+                    <th>Name</th>
+                    <th>XP</th>
+                    <th>Kills</th>
+                    <th>Deaths</th>
+                    <th>Current Kill Streak</th>
+                    <th>Highest Kill Streak</th>
+                    <th>Bounty</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for player in api_list %}
+                    <tr class="stats-row">
+                        <td>{{ loop.index }}</td>
+                        <td>{{ player.playerName }}</td>
+                        <td>{{ player.xp }}</td>
+                        <td>{{ player.kills }}</td>
+                        <td>{{ player.deaths }}</td>
+                        <td>{{ player.currentKillStreak }}</td>
+                        <td>{{ player.highestKillStreak }}</td>
+                        <td>{{ player.bounty }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
