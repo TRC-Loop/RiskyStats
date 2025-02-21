@@ -1,435 +1,561 @@
-{% extends "base.html" %}
-
-{% block title %}Player Profile: {{ player.playerName }}{% endblock %}
-
-{% block content %}
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+{% extends "base.html" %} {% block title %}Player Profile:
+{{ player.playerName }}{% endblock %} {% block content %}
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+/>
 <style>
-    .player-profile {
-        background-color: #121212;
-        border-radius: 15px;
-        box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5);
-        overflow: hidden;
-        margin-top: 30px;
-        margin-bottom: 30px;
-        opacity: 0;
-        animation: fadeIn 0.5s forwards 0.3s;
+  .player-profile {
+    background-color: #121212;
+    border-radius: 15px;
+    box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+    margin-top: 30px;
+    margin-bottom: 30px;
+    opacity: 0;
+    animation: fadeIn 0.5s forwards 0.3s;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
     }
 
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
-            transform: translateY(-20px);
-        }
-
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
+    to {
+      opacity: 1;
+      transform: translateY(0);
     }
+  }
 
+  .profile-header {
+    background: linear-gradient(
+      135deg,
+      #6200ea 0%,
+      #3700b3 50%,
+      #000000 100%
+    );
+    color: #fff;
+    padding: 40px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .profile-header::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url(
+        "https://wallpapers.com/images/featured/snorlax-t7wod9bjkjk3a3m2.webp"
+      )
+      repeat;
+    opacity: 0.1;
+    z-index: 0;
+  }
+
+  .avatar-wrapper {
+    width: 180px;
+    height: 180px;
+    border-radius: 24px;
+    overflow: hidden;
+    margin: 0 auto 20px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .player-avatar {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .player-name {
+    font-size: 2.8rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    text-transform: capitalize;
+    letter-spacing: 1px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .player-title {
+    font-size: 1.2rem;
+    color: #ddd;
+    margin-bottom: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .stats-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 25px;
+    padding: 30px;
+    position: relative;
+  }
+
+  .stat-card {
+    background-color: #1e1e1e;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 3px 15px rgba(0, 0, 0, 0.4);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+  }
+
+  .stat-icon {
+    font-size: 2rem;
+    color: #6200ea;
+    margin-bottom: 10px;
+    display: block;
+  }
+
+  .stat-value {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 5px;
+    color: #fff;
+  }
+
+  .stat-label {
+    font-size: 1rem;
+    color: #aaa;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .export-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    padding: 20px;
+    background-color: #0d0d0d;
+    border-top: 1px solid #222;
+  }
+
+  .export-button {
+    padding: 12px 25px;
+    font-size: 1.1rem;
+    background-color: #3498db;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: background-color 0.3s ease, transform 0.2s ease-in-out;
+  }
+
+  .export-button:hover {
+    background-color: #2980b9;
+    transform: scale(1.05);
+  }
+
+  .hero-section {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #1e1e1e;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+  }
+
+  .hero-header {
+    font-size: 1.6rem;
+    font-weight: 600;
+    cursor: pointer;
+    color: #6200ea;
+    margin-bottom: 10px;
+    text-align: center;
+  }
+
+  .hero-stats {
+    display: none;
+    padding: 10px;
+    margin-top: 10px;
+    background-color: #2a2a2a;
+    border-radius: 8px;
+  }
+
+  .hero-stat {
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .hero-stat-label {
+    color: #aaa;
+  }
+
+  /* Media Queries for Responsiveness */
+  @media (max-width: 768px) {
     .profile-header {
-        background: linear-gradient(135deg,
-                #6200ea 0%,
-                #3700b3 50%,
-                #000000 100%);
-        color: #fff;
-        padding: 40px;
-        text-align: center;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .profile-header::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: url("https://wallpapers.com/images/featured/snorlax-t7wod9bjkjk3a3m2.webp") repeat;
-        opacity: 0.1;
-        z-index: 0;
+      padding: 30px;
     }
 
     .avatar-wrapper {
-        width: 180px;
-        height: 180px;
-        border-radius: 24px;
-        overflow: hidden;
-        margin: 0 auto 20px;
-        box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
-        border: 5px solid #fff;
-        position: relative;
-        z-index: 1;
-    }
-
-    .player-avatar {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        display: block;
+      width: 150px;
+      height: 150px;
     }
 
     .player-name {
-        font-size: 2.8rem;
-        font-weight: 700;
-        margin-bottom: 10px;
-        text-transform: capitalize;
-        letter-spacing: 1px;
-        position: relative;
-        z-index: 1;
-    }
-
-    .player-title {
-        font-size: 1.2rem;
-        color: #ddd;
-        margin-bottom: 0;
-        position: relative;
-        z-index: 1;
+      font-size: 2.2rem;
     }
 
     .stats-container {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 25px;
-        padding: 30px;
-        position: relative;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      padding: 20px;
     }
 
     .stat-card {
-        background-color: #1e1e1e;
-        border-radius: 12px;
-        padding: 20px;
-        box-shadow: 0 3px 15px rgba(0, 0, 0, 0.4);
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .stat-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+      padding: 15px;
     }
 
     .stat-icon {
-        font-size: 2rem;
-        color: #6200ea;
-        margin-bottom: 10px;
-        display: block;
+      font-size: 1.5rem;
+      margin-bottom: 5px;
     }
 
     .stat-value {
-        font-size: 1.8rem;
-        font-weight: 600;
-        margin-bottom: 5px;
-        color: #fff;
+      font-size: 1.5rem;
     }
 
     .stat-label {
-        font-size: 1rem;
-        color: #aaa;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
+      font-size: 0.9rem;
     }
 
     .export-buttons {
-        display: flex;
-        justify-content: center;
-        gap: 20px;
-        padding: 20px;
-        background-color: #0d0d0d;
-        border-top: 1px solid #222;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
     }
 
     .export-button {
-        padding: 12px 25px;
-        font-size: 1.1rem;
-        background-color: #3498db;
-        color: #fff;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        transition: background-color 0.3s ease, transform 0.2s ease-in-out;
+      width: 100%;
+      text-align: center;
     }
+  }
 
-    .export-button:hover {
-        background-color: #2980b9;
-        transform: scale(1.05);
-    }
+  .popup-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
 
-    .hero-section {
-        margin-top: 20px;
-        padding: 20px;
-        background-color: #1e1e1e;
-        border-radius: 10px;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
-    }
+  .popup-content {
+    position: relative;
+    background: #121212;
+    width: 90vw;
+    height: 90vh;
+    max-width: 90%;
+    max-height: 90%;
+    border-radius: 10px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
 
-    .hero-header {
-        font-size: 1.6rem;
-        font-weight: 600;
-        cursor: pointer;
-        color: #6200ea;
-        margin-bottom: 10px;
-        text-align: center;
-    }
+  .close-popup {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 24px;
+    color: #fff;
+    cursor: pointer;
+    z-index: 1001;
+  }
 
-    .hero-stats {
-        display: none;
-        padding: 10px;
-        margin-top: 10px;
-        background-color: #2a2a2a;
-        border-radius: 8px;
-    }
+  .popup-content iframe {
+    flex-grow: 1;
+    width: 100%;
+    height: calc(100% - 40px);
+    border: none;
+  }
 
-    .hero-stat {
-        margin-bottom: 8px;
-        display: flex;
-        justify-content: space-between;
-    }
+  .popup-footer {
+    padding: 10px;
+    text-align: center;
+    background: #181818;
+    color: #ffffff;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
 
-    .hero-stat-label {
-        color: #aaa;
-    }
+  .popup-footer a {
+    color: #3498db;
+    text-decoration: none;
+  }
 
-    /* Media Queries for Responsiveness */
-    @media (max-width: 768px) {
-        .profile-header {
-            padding: 30px;
-        }
+  .popup-footer a:hover {
+    text-decoration: underline;
+  }
 
-        .avatar-wrapper {
-            width: 150px;
-            height: 150px;
-        }
+  /* New Button Style */
+  .inventory-button {
+    padding: 12px 25px;
+    font-size: 1.1rem;
+    background-color: #4caf50;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: background-color 0.3s ease, transform 0.2s ease-in-out;
+    margin: 20px auto;
+    display: block;
+    width: fit-content;
+  }
 
-        .player-name {
-            font-size: 2.2rem;
-        }
-
-        .stats-container {
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            padding: 20px;
-        }
-
-        .stat-card {
-            padding: 15px;
-        }
-
-        .stat-icon {
-            font-size: 1.5rem;
-            margin-bottom: 5px;
-        }
-
-        .stat-value {
-            font-size: 1.5rem;
-        }
-
-        .stat-label {
-            font-size: 0.9rem;
-        }
-
-        .export-buttons {
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .export-button {
-            width: 100%;
-            text-align: center;
-        }
-    }
+  .inventory-button:hover {
+    background-color: #43a047;
+    transform: scale(1.05);
+  }
 </style>
 <div class="player-profile container">
-    <div class="profile-header">
-        <div class="avatar-wrapper">
-            <img class="player-avatar"
-                src="https://crafatar.com/avatars/{{ player.playerId }}?size=200&default=MHF_Steve&overlay"
-                alt="Player Avatar" />
-        </div>
-        <h2 class="player-name">{{ player.playerName }}</h2>
-        <p class="player-title">{{ player.playerId }}</p>
+  <div class="profile-header">
+    <div class="avatar-wrapper">
+      <img
+        class="player-avatar"
+        src="https://crafatar.com/renders/head/{{ player.playerId }}?size=200&default=MHF_Steve&overlay"
+        alt="Player Avatar"
+      />
+    </div>
+    <h2 class="player-name">{{ player.playerName }}</h2>
+    <p class="player-title">{{ player.playerId }}</p>
+  </div>
+
+  <div class="stats-container">
+    <div class="stat-card">
+      <i class="stat-icon ti ti-trophy"></i>
+      <span class="stat-value">{{ player.xp }}</span>
+      <span class="stat-label">XP</span>
     </div>
 
-    <div class="stats-container">
-        <div class="stat-card">
-            <i class="stat-icon ti ti-trophy"></i>
-            <span class="stat-value">{{ player.xp }}</span>
-            <span class="stat-label">XP</span>
-        </div>
-
-        <div class="stat-card">
-            <i class="stat-icon ti ti-target"></i>
-            <span class="stat-value">{{ player.kills }}</span>
-            <span class="stat-label">Kills</span>
-        </div>
-
-        <div class="stat-card">
-            <i class="stat-icon ti ti-heart"></i>
-            <span class="stat-value">{{ player.deaths }}</span>
-            <span class="stat-label">Deaths</span>
-        </div>
-
-        <div class="stat-card">
-            <i class="stat-icon ti ti-award"></i>
-            <span class="stat-value">{{ player.currentKillStreak }}</span>
-            <span class="stat-label">Current Kill Streak</span>
-        </div>
-
-        <div class="stat-card">
-            <i class="stat-icon ti ti-star"></i>
-            <span class="stat-value">{{ player.highestKillStreak }}</span>
-            <span class="stat-label">Highest Kill Streak</span>
-        </div>
-
-        <div class="stat-card">
-            <i class="stat-icon ti ti-currency-dollar"></i>
-            <span class="stat-value">{{ player.bounty }}</span>
-            <span class="stat-label">Bounty</span>
-        </div>
+    <div class="stat-card">
+      <i class="stat-icon ti ti-target"></i>
+      <span class="stat-value">{{ player.kills }}</span>
+      <span class="stat-label">Kills</span>
     </div>
 
-    <!-- Heroes Section -->
-    <div class="hero-section">
-        <div class="hero-header" id="toggleHeroes">Heroes Stats</div>
-        <div class="hero-stats" id="heroesStats">
-            {% for hero, abilities in player.heroes.items() %}
-                <div class="hero-stat">
-                    <strong>{{ hero | capitalize }}</strong>
-                    <ul>
-                        {% for ability, stats in abilities.items() %}
-                            <li><strong>{{ ability | replace('_', ' ') | capitalize }}:</strong></li>
-                            {% for stat, value in stats.items() %}
-                                <li>{{ stat | replace('_', ' ') | capitalize }}: {{ value.experiencePoints }}</li>
-                            {% endfor %}
-                        {% endfor %}
-                    </ul>
-                </div>
-            {% endfor %}
-        </div>
+    <div class="stat-card">
+      <i class="stat-icon ti ti-heart"></i>
+      <span class="stat-value">{{ player.deaths }}</span>
+      <span class="stat-label">Deaths</span>
     </div>
 
-    <div class="export-buttons">
-        <button class="export-button" id="export-json">
-            <i class="ti ti-download"></i> Export as JSON
-        </button>
-        <button class="export-button" id="export-pdf">
-            <i class="ti ti-file-type-pdf"></i> Export as PDF
-        </button>
+    <div class="stat-card">
+      <i class="stat-icon ti ti-award"></i>
+      <span class="stat-value">{{ player.currentKillStreak }}</span>
+      <span class="stat-label">Current Kill Streak</span>
     </div>
+
+    <div class="stat-card">
+      <i class="stat-icon ti ti-star"></i>
+      <span class="stat-value">{{ player.highestKillStreak }}</span>
+      <span class="stat-label">Highest Kill Streak</span>
+    </div>
+
+    <div class="stat-card">
+      <i class="stat-icon ti ti-currency-dollar"></i>
+      <span class="stat-value">{{ player.bounty }}</span>
+      <span class="stat-label">Bounty</span>
+    </div>
+  </div>
+
+  <!-- Heroes Section -->
+  <div class="hero-section">
+    <div class="hero-header" id="toggleHeroes">Heroes Stats</div>
+    <div class="hero-stats" id="heroesStats">
+      {% for hero, abilities in player.heroes.items() %}
+      <div class="hero-stat">
+        <strong>{{ hero | capitalize }}</strong>
+        <ul>
+          {% for ability, stats in abilities.items() %}
+          <li>
+            <strong>{{ ability | replace('_', ' ') | capitalize }}:</strong>
+          </li>
+          {% for stat, value in stats.items() %}
+          <li>
+            {{ stat | replace('_', ' ') | capitalize }}:
+            {{ value.experiencePoints }}
+          </li>
+          {% endfor %} {% endfor %}
+        </ul>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Inventory Button -->
+  <button class="inventory-button" onclick="openPopup()">
+    <i class="ti ti-briefcase"></i> Open Inventory
+  </button>
+
+  <div class="export-buttons">
+    <button class="export-button" id="export-json">
+      <i class="ti ti-download"></i> Export as JSON
+    </button>
+    <button class="export-button" id="export-pdf">
+      <i class="ti ti-file-type-pdf"></i> Export as PDF
+    </button>
+  </div>
+
+  <!-- Popup Container -->
+  <div class="popup-overlay" id="iframePopup">
+    <div class="popup-content">
+      <span class="close-popup" onclick="closePopup()">✖</span>
+      <iframe
+        src="https://leonlp9.github.io/HGLaborStats/"
+        id="popupIframe"
+      ></iframe>
+      <div class="popup-footer">
+        <p>
+          Inventory made by:
+          <a href="https://leonlp9.github.io/HGLaborStats/" target="_blank"
+            >LeonLP9</a
+          >
+        </p>
+      </div>
+    </div>
+  </div>
 </div>
-
-{% endblock %}
-
-{% block scripts %}
+{% endblock %} {% block scripts %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        // Fade-in animation on load
-        const playerProfile = document.querySelector(".player-profile");
-        playerProfile.style.opacity = 1;
+  document.addEventListener("DOMContentLoaded", function () {
+    // Fade-in animation on load
+    const playerProfile = document.querySelector(".player-profile");
+    playerProfile.style.opacity = 1;
 
-        // Toggle Heroes Section
-        const toggleHeroes = document.getElementById("toggleHeroes");
-        const heroesStats = document.getElementById("heroesStats");
-        toggleHeroes.addEventListener("click", function () {
-            if (heroesStats.style.display === "none" || heroesStats.style.display === "") {
-                heroesStats.style.display = "block";
-            } else {
-                heroesStats.style.display = "none";
-            }
-        });
-
-        document
-            .getElementById("export-json")
-            .addEventListener("click", function () {
-                const playerData = ({{ player | tojson }});
-                const blob = new Blob([JSON.stringify(playerData, null, 2)], {
-                    type: "application/json",
-                });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement("a");
-                a.href = url;
-                a.download = `${playerData.playerName}_profile.json`;
-                a.click();
-                URL.revokeObjectURL(url); // Clean up the URL object
-            });
-
-        document
-            .getElementById("export-pdf")
-            .addEventListener("click", function () {
-                const playerName = "{{ player.playerName }}";
-                const xp = "{{ player.xp }}";
-                const kills = "{{ player.kills }}";
-                const deaths = "{{ player.deaths }}";
-                const currentKillStreak = "{{ player.currentKillStreak }}";
-                const highestKillStreak = "{{ player.highestKillStreak }}";
-                const bounty = "{{ player.bounty }}";
-                const avatarUrl =
-                    "https://crafatar.com/avatars/{{ player.playerId }}?size=80"; // Smaller size for PDF
-
-                // Function to load image as base64
-                function loadImageAsBase64(url) {
-                    return new Promise((resolve, reject) => {
-                        const img = new Image();
-                        img.setAttribute("crossOrigin", "anonymous"); // Important for CORS
-                        img.onload = () => {
-                            const canvas = document.createElement("canvas");
-                            canvas.width = img.width;
-                            canvas.height = img.height;
-                            const ctx = canvas.getContext("2d");
-                            ctx.drawImage(img, 0, 0);
-                            const dataURL = canvas.toDataURL("image/png");
-                            resolve(dataURL);
-                        };
-                        img.onerror = (error) => reject(error);
-                        img.src = url;
-                    });
-                }
-
-                // Use jsPDF
-                const { jsPDF } = window.jspdf;
-                const doc = new jsPDF();
-
-                // Load avatar and then generate PDF
-                loadImageAsBase64(avatarUrl)
-                    .then((avatarBase64) => {
-                        // Add avatar
-                        doc.addImage(avatarBase64, "PNG", 10, 10, 20, 20); // x, y, width, height
-
-                        // Add player name
-                        doc.setFontSize(18);
-                        doc.text(playerName, 35, 20);
-
-                        // Add stats
-                        doc.setFontSize(12);
-                        let yOffset = 40;
-                        const lineHeight = 10;
-                        doc.text(`XP: ${xp}`, 10, yOffset);
-                        yOffset += lineHeight;
-                        doc.text(`Kills: ${kills}`, 10, yOffset);
-                        yOffset += lineHeight;
-                        doc.text(`Deaths: ${deaths}`, 10, yOffset);
-                        yOffset += lineHeight;
-                        doc.text(`Current Kill Streak: ${currentKillStreak}`, 10, yOffset);
-                        yOffset += lineHeight;
-                        doc.text(`Highest Kill Streak: ${highestKillStreak}`, 10, yOffset);
-                        yOffset += lineHeight;
-                        doc.text(`Bounty: ${bounty}`, 10, yOffset);
-
-                        // Save the PDF
-                        doc.save(`${playerName}_profile.pdf`);
-                    })
-                    .catch((error) => {
-                        console.error("Error loading avatar:", error);
-                        alert("Error generating PDF. Check console for details.");
-                    });
-            });
+    // Toggle Heroes Section
+    const toggleHeroes = document.getElementById("toggleHeroes");
+    const heroesStats = document.getElementById("heroesStats");
+    toggleHeroes.addEventListener("click", function () {
+      if (
+        heroesStats.style.display === "none" ||
+        heroesStats.style.display === ""
+      ) {
+        heroesStats.style.display = "block";
+      } else {
+        heroesStats.style.display = "none";
+      }
     });
+
+    document
+      .getElementById("export-json")
+      .addEventListener("click", function () {
+        const playerData = ({{ player | tojson }});
+        const blob = new Blob([JSON.stringify(playerData, null, 2)], {
+          type: "application/json",
+        });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `${playerData.playerName}_profile.json`;
+        a.click();
+        URL.revokeObjectURL(url); // Clean up the URL object
+      });
+
+    document
+      .getElementById("export-pdf")
+      .addEventListener("click", function () {
+        const playerName = "{{ player.playerName }}";
+        const xp = "{{ player.xp }}";
+        const kills = "{{ player.kills }}";
+        const deaths = "{{ player.deaths }}";
+        const currentKillStreak = "{{ player.currentKillStreak }}";
+        const highestKillStreak = "{{ player.highestKillStreak }}";
+        const bounty = "{{ player.bounty }}";
+        const avatarUrl =
+          "https://crafatar.com/renders/head/{{ player.playerId }}?size=80"; // Smaller size for PDF
+
+        // Function to load image as base64
+        function loadImageAsBase64(url) {
+          return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.setAttribute("crossOrigin", "anonymous"); // Important for CORS
+            img.onload = () => {
+              const canvas = document.createElement("canvas");
+              canvas.width = img.width;
+              canvas.height = img.height;
+              const ctx = canvas.getContext("2d");
+              ctx.drawImage(img, 0, 0);
+              const dataURL = canvas.toDataURL("image/png");
+              resolve(dataURL);
+            };
+            img.onerror = (error) => reject(error);
+            img.src = url;
+          });
+        }
+
+        // Use jsPDF
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+
+        // Load avatar and then generate PDF
+        loadImageAsBase64(avatarUrl)
+          .then((avatarBase64) => {
+            // Add avatar
+            doc.addImage(avatarBase64, "PNG", 10, 10, 20, 20); // x, y, width, height
+
+            // Add player name
+            doc.setFontSize(18);
+            doc.text(playerName, 35, 20);
+
+            // Add stats
+            doc.setFontSize(12);
+            let yOffset = 40;
+            const lineHeight = 10;
+            doc.text(`XP: ${xp}`, 10, yOffset);
+            yOffset += lineHeight;
+            doc.text(`Kills: ${kills}`, 10, yOffset);
+            yOffset += lineHeight;
+            doc.text(`Deaths: ${deaths}`, 10, yOffset);
+            yOffset += lineHeight;
+            doc.text(`Current Kill Streak: ${currentKillStreak}`, 10, yOffset);
+            yOffset += lineHeight;
+            doc.text(`Highest Kill Streak: ${highestKillStreak}`, 10, yOffset);
+            yOffset += lineHeight;
+            doc.text(`Bounty: ${bounty}`, 10, yOffset);
+
+            // Save the PDF
+            doc.save(`${playerName}_profile.pdf`);
+          })
+          .catch((error) => {
+            console.error("Error loading avatar:", error);
+            alert("Error generating PDF. Check console for details.");
+          });
+      });
+  });
+
+  function openPopup() {
+    document.getElementById("iframePopup").style.display = "flex";
+  }
+
+  function closePopup() {
+    document.getElementById("iframePopup").style.display = "none";
+  }
 </script>
 {% endblock %}
