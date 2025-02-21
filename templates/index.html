@@ -57,9 +57,7 @@
     <tbody>
       {% for player in api_list %}
       <tr
-        class="stats-row {% if loop.index == 1 %}gold{% elif loop.index == 2
-        %}silver{% elif loop.index == 3 %}bronze{% endif %}"
-      >
+        class="stats-row {% if loop.index == 1 %}gold{% elif loop.index == 2 %}silver{% elif loop.index == 3 %}bronze{% endif %}">
         <td>
           {% if loop.index == 1 %} 🥇
           {% elif loop.index == 2 %} 🥈
@@ -68,7 +66,7 @@
         </td>
 
         <td>
-          <div class="player-name-with-avatar">
+          <a href="/player/{{ player.playerId }}" class="player-name-with-avatar no-link-style">
             <img
               class="player-head"
               data-id="{{ player.playerId }}"
@@ -76,7 +74,7 @@
               alt="Player Avatar"
             />
             {{ player.playerName }}
-          </div>
+          </a>
         </td>
         <td>{{ player.xp }}</td>
         <td>{{ player.kills }}</td>

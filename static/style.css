@@ -256,3 +256,15 @@ footer {
 .submit-bttn:hover {
     background-color: #3700b3;
 }
+
+.no-link-style {
+    text-decoration: none;
+    color: inherit;
+}
+
+.no-link-style:hover {
+    text-decoration: none;
+    /* Optional: ensures no underline on hover */
+    color: inherit;
+    /* Optional: keeps text color as it was */
+}

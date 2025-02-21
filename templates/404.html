@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}404 - Player Not Found{% endblock %}
+
+{% block content %}
+<style>
+    body {
+        background-color: #121212;
+        color: #fff;
+        text-align: center;
+        font-family: 'Arial', sans-serif;
+        margin: 0;
+        padding: 0;
+    }
+
+    .snorlax-container {
+        margin-top: 50px;
+        position: relative;
+    }
+
+    .snorlax {
+        width: 300px;
+        height: auto;
+        animation: sleep 3s infinite alternate;
+    }
+
+    .message {
+        font-size: 1.8rem;
+        margin-top: 20px;
+        animation: fadeIn 2s ease-in-out;
+    }
+
+    .go-back {
+        display: inline-block;
+        margin-top: 30px;
+        padding: 12px 25px;
+        font-size: 1.2rem;
+        background-color: #6200ea;
+        color: white;
+        border-radius: 10px;
+        text-decoration: none;
+        transition: transform 0.3s ease-in-out;
+    }
+
+    .go-back:hover {
+        transform: scale(1.1);
+        background-color: #3700b3;
+    }
+
+    @keyframes sleep {
+        0% { transform: translateY(0); }
+        100% { transform: translateY(10px); }
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+</style>
+
+<div class="snorlax-container">
+    <h1 style="font-size: larger;">404</h1>
+    <p class="message">Oh no! A wild Snorlax is blocking your path! <br> Player not found...</p>
+    <a href="/" class="go-back">Return to Safety</a>
+</div>
+
+{% endblock %}

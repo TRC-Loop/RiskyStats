@@ -13,6 +13,10 @@ def index():
         ),
     )
 
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template("404.html"), 404
+
 @app.route("/player/<uuid:uuid>")
 def player(uuid):
     # If you want to pass it to your api_response.getPlayerFull(uuid), make sure to use it as a string
