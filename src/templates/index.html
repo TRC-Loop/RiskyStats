@@ -1,37 +1,229 @@
 {% extends "base.html" %}
 
-{% block title %}Home - My Flask App{% endblock %}
+{% block title %}Player List{% endblock %}
 
 {% block content %}
-    <div class="container">
-        <h3 class="stats-header">Top Players Stats {{ api_list|length }} Found</h3>
-        <table class="stats-table">
-            <thead>
-                <tr>
-                    <th>Place</th>
-                    <th>Name</th>
-                    <th>XP</th>
-                    <th>Kills</th>
-                    <th>Deaths</th>
-                    <th>Current Kill Streak</th>
-                    <th>Highest Kill Streak</th>
-                    <th>Bounty</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for player in api_list %}
-                    <tr class="stats-row">
-                        <td>{{ loop.index }}</td>
-                        <td>{{ player.playerName }}</td>
-                        <td>{{ player.xp }}</td>
-                        <td>{{ player.kills }}</td>
-                        <td>{{ player.deaths }}</td>
-                        <td>{{ player.currentKillStreak }}</td>
-                        <td>{{ player.highestKillStreak }}</td>
-                        <td>{{ player.bounty }}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+<div class="container">
+  <h3 class="stats-header">Top {{ api_list|length }} Players</h3>
+
+  <!-- Search Button -->
+  <div class="search-wrapper">
+    <button id="search-bttn" class="search-bttn">
+      <i class="tabler-icon tabler-icon-search"></i> Lookup Player
+    </button>
+  </div>
+
+  <!-- Popup Modal -->
+  <div id="search-popup" class="search-popup">
+    <div class="search-popup-content">
+      <span id="popup-close" class="popup-close">&times;</span>
+      <label for="player-name" class="search-label"
+        >Enter Player Name or UUID:</label
+      >
+      <div class="player-search-container">
+        <input
+          id="player-name"
+          class="player-name"
+          type="text"
+          placeholder="Player Name or UUID"
+        />
+        <div class="avatar-container">
+          <img
+            id="player-avatar"
+            class="player-avatar"
+            src="https://crafatar.com/avatars/069a79f4-44e9-4726-a5be-fca90e38aaf5"
+            alt="Player Avatar"
+          />
+        </div>
+      </div>
+      <button id="submit-bttn" class="submit-bttn">Lookup</button>
     </div>
+  </div>
+
+  <!-- Stats Table -->
+  <table class="stats-table">
+    <thead>
+      <tr>
+        <th>Place</th>
+        <th>Name</th>
+        <th>XP</th>
+        <th>Kills</th>
+        <th>Deaths</th>
+        <th>Current Kill Streak</th>
+        <th>Highest Kill Streak</th>
+        <th>Bounty</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for player in api_list %}
+      <tr
+        class="stats-row {% if loop.index == 1 %}gold{% elif loop.index == 2
+        %}silver{% elif loop.index == 3 %}bronze{% endif %}"
+      >
+        <td>
+          {% if loop.index == 1 %} 🥇
+          {% elif loop.index == 2 %} 🥈
+          {% elif loop.index == 3 %} 🥉
+          {% else %} #{{ loop.index }} {% endif %}
+        </td>
+
+        <td>
+          <div class="player-name-with-avatar">
+            <img
+              class="player-head"
+              data-id="{{ player.playerId }}"
+              src="https://crafatar.com/avatars/069a79f4-44e9-4726-a5be-fca90e38aaf5"
+              alt="Player Avatar"
+            />
+            {{ player.playerName }}
+          </div>
+        </td>
+        <td>{{ player.xp }}</td>
+        <td>{{ player.kills }}</td>
+        <td>{{ player.deaths }}</td>
+        <td>{{ player.currentKillStreak }}</td>
+        <td>{{ player.highestKillStreak }}</td>
+        <td>{{ player.bounty }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  window.onload = function () {
+    const playerHeads = document.querySelectorAll(".player-head");
+    console.log("Found", playerHeads.length, "images to load.");
+
+    playerHeads.forEach(function (img) {
+      const playerID = img.getAttribute("data-id");
+      const imgUrl = `https://crafatar.com/avatars/${playerID}`;
+
+      img.style.display = "none";
+
+      const image = new Image();
+      image.onload = function () {
+        img.src = imgUrl;
+        img.style.display = "inline";
+      };
+      image.onerror = function () {
+        img.src = "https://crafatar.com/avatars/069a79f4-44e9-4726-a5be-fca90e38aaf5"; // Default avatar
+        img.style.display = "inline";
+        console.log(`Failed to load image for player ID: ${playerID}`);
+      };
+      image.src = imgUrl;
+    });
+  };
+
+  // Open search popup
+  document.getElementById("search-bttn").addEventListener("click", function () {
+    document.getElementById("search-popup").style.display = "flex";
+  });
+
+  // Close popup
+  document.getElementById("popup-close").addEventListener("click", function () {
+    document.getElementById("search-popup").style.display = "none";
+  });
+
+  // Lookup button functionality
+  document.getElementById("submit-bttn").addEventListener("click", function () {
+    const playerInput = document.getElementById("player-name").value.trim();
+
+    if (isValidUUID(playerInput)) {
+      // If it's a UUID, format it and use it directly
+      window.location.href = `/player/${formatUUID(playerInput)}`;
+    } else if (playerInput.length <= 24) {
+      // Otherwise, attempt to resolve it to a UUID using the proxy
+      getUuidFromName(playerInput).then((playerUuid) => {
+        if (playerUuid) {
+          window.location.href = `/player/${formatUUID(playerUuid)}`;
+        } else {
+          alert("Player not found!");
+        }
+      });
+    } else {
+      alert("Invalid input. Please enter a valid player name (max 24 characters) or UUID.");
+    }
+  });
+
+  // Fetch UUID from player name using your Flask proxy
+  function getUuidFromName(playerName) {
+    return fetch(`/api/uuid/${playerName}`) // Use your Flask route
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Player not found");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        if (data.uuid) {
+          return formatUUID(data.uuid); // Format the UUID
+        } else {
+          console.error("UUID not found in response:", data);
+          return null;
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+        return null;
+      });
+  }
+
+  // Function to format a trimmed UUID to a full UUID
+  function formatUUID(uuid) {
+    if (!uuid) {
+      return null;
+    }
+
+    // Ensure the UUID is the correct length before attempting to format it
+    if (uuid.length !== 32) {
+      console.warn("UUID is not the correct length for formatting:", uuid);
+      return uuid; // Return the original UUID if it's not the expected length
+    }
+
+    return (
+      uuid.substring(0, 8) +
+      "-" +
+      uuid.substring(8, 12) +
+      "-" +
+      uuid.substring(12, 16) +
+      "-" +
+      uuid.substring(16, 20) +
+      "-" +
+      uuid.substring(20, 32)
+    );
+  }
+
+  // Update avatar on input change
+  document.getElementById("player-name").addEventListener("input", function () {
+    const playerInput = this.value.trim();
+    const avatarUrl = `https://crafatar.com/avatars/${playerInput}`;
+
+    // Check if the input is UUID or player name
+    if (isValidUUID(playerInput)) {
+      document.getElementById("player-avatar").src = avatarUrl;
+    } else if (playerInput.length <= 24) {
+      getUuidFromName(playerInput).then((playerUuid) => {
+        if (playerUuid) {
+          document.getElementById("player-avatar").src =
+            `https://crafatar.com/avatars/${playerUuid}`;
+        } else {
+          document.getElementById("player-avatar").src =
+            "https://crafatar.com/avatars/069a79f4-44e9-4726-a5be-fca90e38aaf5"; // Default avatar
+        }
+      });
+    } else {
+      document.getElementById("player-avatar").src =
+        "https://crafatar.com/avatars/069a79f4-44e9-4726-a5be-fca90e38aaf5"; // Default avatar
+    }
+  });
+
+  // Check if the input is a valid UUID
+  function isValidUUID(uuid) {
+    const uuidRegex = /^[a-f0-9\-]{36}$/i;
+    return uuidRegex.test(uuid);
+  }
+</script>
 {% endblock %}
