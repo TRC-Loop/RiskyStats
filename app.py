@@ -35,4 +35,4 @@ def get_uuid(player_name):
         return jsonify({"error": str(e)}), 500  # Return error and 500 status
 
 if __name__ == "__main__":
-    app.run(debug=False,host="0.0.0.0")
+    app.run()
